@@ -4,47 +4,25 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rockps</title>
+    <title>Document</title>
 </head>
 <body>
-    <div class="container-input">
- 
-        <button id="rock" onclick="user('rock')" >rock</button>
-        <button id="paper" onclick="user('paper')">paper</button>
-        <button id="scissors" onclick="user('scissors')">scissors</button>
-
-    </div>
-
-    <div class="container-input">
- 
-       <p>computers</p>
-       <p id="computer" ></p>
-       <p>user</p>
-       <p id="user"></p>
-       <p id='score' onclick="score()"></p>
-    </div>
-
-
     <script>
-        function user(input){
-           document.getElementById("user").innerHTML=input;
-           var c = computer()
-           document.getElementById("computer").innerHTML=c;
-           
+         const user = prompt("Enter your name")
+         var a = ['rock','paper','scissors'];
+         var b = Math.floor(Math.random() * 3);
+         var system = a[b]
+         document.write("computer" + system)
+         document.write("user" + user)
+        if (user === system){
+            document.write("match draw")
         }
-        function computer(){
-            var a = ['rock','paper','scissors'];
-            var b = Math.floor(Math.random() * 3);
-            return a[b]
-           
+        else if((user==="rock" && system==="scissors") || (user==="scissors" && system==="paper") ||( user==="paper" && system==="rock"))
+        {
+            document.write("user won")
         }
-
-        function score(){
-            if (user(input)==computer()){
-                document.getElementById("score").innerHTML="draw match";
-            }
-            
-           
+        else{
+            document.write("computer wins")
         }
     </script>
 </body>
