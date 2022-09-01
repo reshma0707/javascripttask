@@ -19,10 +19,7 @@
 */
 
 import Route from '@ioc:Adonis/Core/Route'
-Route.post('/add','ArithsController.add').middleware('Mw')
-Route.post('/sub','ArithsController.sub').middleware('Mw')
-Route.post('/mul','ArithsController.mul').middleware('Mw')
-Route.post('/div','ArithsController.div').middleware('Mw')
-
-
-
+Route.post('/insert','TabsController.insert1')
+Route.get('/read','TabsController.read')
+Route.patch('/update','TabsController.update')
+Route.delete('/delete','TabsController.delete')
