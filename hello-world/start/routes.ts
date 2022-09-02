@@ -19,7 +19,9 @@
 */
 
 import Route from '@ioc:Adonis/Core/Route'
-Route.post('/insert','TabsController.insert1')
-Route.get('/read','TabsController.read')
-Route.patch('/update','TabsController.update')
-Route.delete('/delete','TabsController.delete')
+Route.post('/update_dept','DepartmentsController.update_dept')
+Route.get('/read_dept','DepartmentsController.read_dept')
+Route.get('/join_one','StudentsController.join_one')
+Route.post('/insertstuds','JoinsController.insertstuds')
+Route.post('/getUser','StudentsController.getUser')
+Route.post('/getUserName','StudentsController.getUserName')

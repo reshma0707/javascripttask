@@ -3,14 +3,13 @@ import Tab from 'App/Models/Tab'
 //import Database from '@ioc:Adonis/Lucid/Database'
 export default class TabsController {
     public async insert1({request}:HttpContextContract){
-        let tab = new Tab()
-        tab.id = request.input('id')
-        tab.name = request.input('name')
-        tab.save()
+        let tan = new Tab()
+        tan.id = request.input('id')
+        tan.name = request.input('name')
+        tan.save()
         
 
-        return "Successfully Inserted" + tab
-        
+        return "Successfully Inserted" 
         }
         
         public async read(){
