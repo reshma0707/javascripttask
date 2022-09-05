@@ -5,8 +5,7 @@ import departments from 'App/Models/Department'
 export default class DepartmentsController {
 
     // TO INSERT DATA INTO departments TABLE 
-
-    public async insert_dept({request}:HttpContextContract){
+    public async insertDept({request}:HttpContextContract){
      try
        {
         const deptVal = await request.validate(deptValidator)
@@ -25,29 +24,28 @@ export default class DepartmentsController {
         
     }
 
-
     // To read deparments table
-
-    public async read_dept(){
-        
-        return await departments.all()
-        
+    public async readDept(){
+        const show = departments.query()
+        return show 
         }
 
 
     // To update deparments table
-
-    public async update_dept(){
+    public async updateDept(){
+        try{
       const user=await departments.findByOrFail('department_id',4)
-      user.hod='revin'
+       user.hod='reshma'
        await user.save()
        return departments.all()
+        }
+        catch{
+            return "error"
+        }
     } 
 
     // To delete 
-
-
-    public async delete_dept(){
+    public async deleteDept(){
         const user=await departments.findByOrFail('hod',"revin")
          user.delete()
          await user.save()
