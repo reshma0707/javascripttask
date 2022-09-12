@@ -2,10 +2,10 @@ import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
 
 export default class Department extends BaseModel {
   @column({ isPrimary: true })
-  public id: number
+  public departmentId ?: number
 
   @column()
-  public deptname: string
+  public departmentName: string
 
   @column()
   public hod: string

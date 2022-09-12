@@ -19,7 +19,22 @@
 */
 
 import Route from '@ioc:Adonis/Core/Route'
-Route.post('/ins','JoinsController.ins')
-Route.get('/read','TabsController.read')
-Route.patch('/update','TabsController.update')
-Route.get('/join','JoinsController.join')
+Route.group(()=>{
+// Department table 
+Route.get('/insertDept','DepartmentsController.readDept')
+Route.get('/readDept','DepartmentsController.readDept')
+Route.patch('/updateDept','DepartmentsController.updateDept')
+Route.get('/deleteDept','DepartmentsController.readDept')
+// Students Table 
+Route.get('/insertStudents','StudentsController.readStudents')
+Route.get('/readStudents','StudentsController.readStudents')
+Route.post('/updateStudents','StudentsController.updateStudents')
+Route.get('/joinStudentsDepartment','StudentsController.joinStudentsDepartment')
+Route.post('/getUser','StudentsController.getUser')
+Route.post('/getUserName','StudentsController.getUserName')
+Route.post('/getUserNameList','StudentsController.getUserNameList')
+Route.delete('/deleteStudents','StudentsController.delete_Students')}).middleware('Mw')
+Route.get('/read','FormsController.readForm')
+Route.post('/insert','FormsController.insert')
+Route.delete('/delete/:id','FormsController.delete')
+Route.patch('/update/:id','FormsController.update')
