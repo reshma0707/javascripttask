@@ -37,8 +37,8 @@
     ></v-text-field>
 
     <v-select
-      v-model="select"
-      :items="items"
+      v-model="city"
+      :items="it"
       :rules="[v => !!v || 'select one city']"
       label="Select your city"
       required
@@ -72,7 +72,7 @@
       v-if="button"
       color="success"
       class="mr-4"
-      @click="validate"
+      @click="insert"
     >
       Validate
     </v-btn>
@@ -92,35 +92,34 @@
      <template v-slot:default>
       <thead>
         <tr>
-          <th scope="col">index </th>
           <th scope="col">name </th>
           <th scope="col">email </th>
           <th scope="col">gender</th>
-          <th scope="col">select</th>
+          <th scope="col">city</th>
           <th scope="col">checkbox</th>
           <th> </th>
         </tr>
       </thead>
       <tbody>
          <tr
-          v-for="(item,index) in users" :key = "index">
-          <td>{{ index+1 }}</td>
+          v-for="item in forms" :key="item.id">
           <td>{{ item.name }}</td>
           <td>{{ item.email }}</td>
           <td>{{ item.gender }}</td>
-          <td>{{ item.select}}</td>
+          <td>{{ item.city}}</td>
           <td>{{ item.checkbox}}</td>
-          <td> <v-icon
+          <td> <v-btn
               small
-              color="error"
-          @click="deleteItem(users.item)"
+              class="rm-2"
+              color="red"
+             @click="deleteItem(item.id)"
             >
               delete
-            </v-icon>
+            </v-btn>
           <v-icon
               small
               color="error"
-          @click="changeItem(item)"
+          @click="changeItem(item.id)"
             >
               edit
             </v-icon>
@@ -132,6 +131,11 @@
      </v-app>
 </template>
 <script>
+import  Vue from 'vue' // in Vue 3
+import axios from 'axios'
+import VueAxios from 'vue-axios'
+Vue.use(VueAxios, axios)
+
  export default {
       data: () => ({
       valid: true,
@@ -147,8 +151,8 @@
         v => !!v || 'E-mail is required',
         v => /.+@.+\..+/.test(v) || 'E-mail must be valid',
       ],
-      select: null,
-      items: [
+      city: '',
+      it: [
         'Chennai',
         'Coimbatore',
         'Madurai',
@@ -161,8 +165,42 @@
       dialogDelete:false,
       pop:false,
       button:true,
-      }),      
+      forms:undefined
+      }),    
+      mounted(){
+     Vue.axios.get("http://127.0.0.1:3333/read").
+            then((res)=>{
+            this.forms=res.data;
+            console.warn(res.data);
+      })},  
       methods: {
+        read(){
+            Vue.axios.get("http://127.0.0.1:3333/readForm").
+            then((res)=>{
+            this.forms=res.data;
+            console.warn(res.data);
+            })
+        },
+        insert(){
+            
+            Vue.axios.post("http://127.0.0.1:3333/insert",{
+            name : this.name,
+            email : this.email,
+            gender :this.gender,
+            city: this.city,
+            checkbox: this.checkbox, 
+            })
+            
+            this.pop=false
+
+        },
+      
+        delete(id){
+             Vue.axios.post(`http://127.0.0.1:3333/delete/${id}`)
+             .then(response => {
+             console.log(response);
+          });
+        },
         validate () {
         this.$refs.form.validate()
             this.users.push({
@@ -170,19 +208,21 @@
             name : this.name,
             email : this.email,
             gender :this.gender,
-            select: this.select,
+            city: this.city,
             checkbox: this.checkbox,
-            row: this.row
           })
           this.$refs.form.reset()
          
           //console.log(JSON.stringify(users))
         },
-     deleteItem (item) {
-      const index = this.users.indexOf(item)
-      confirm('Are you sure you want to delete this item?') && this.users.splice(index, 1)
+     deleteItem(id) {
+       Vue.axios.delete(`http://127.0.0.1:3333/delete/${id}`)
+             .then(response => {
+             console.log(response);
+          });
     },
-   changeItem (item) {
+  async changeItem (item) {
+            const test = item
             this.pop = true,
             this.button=false,
             this.array = item
@@ -190,16 +230,24 @@
             this.name = item.name,
             this. email = item.email,
             this. gender =item.gender,
-            this. select= item.select,
+            this. city= item.city,
             this.checkbox= item.checkbox,
-            this.row= item.row
+            await axios.put(`http://127.0.0.1:40193/updatedept/${test.id}`, {
+            name: test.name,
+            email:test.email,
+            gender: test.gender,
+            city: test.city,
+            checkbox:test.checkbox
+
+
+      })
     },
     save(){
         let get = this.users.findIndex(temp => temp.id == this.array.id)
           this.users[get].name = this.name
           this.users[get].email = this.email
           this.users[get].gender =this.gender
-          this.users[get].select= this.select
+          this.users[get].city= this.city
           this.users[get].checkbox= this.checkbox
          this.button=true
     }
