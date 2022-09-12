@@ -1,151 +1,208 @@
 <template>
-  <v-container>
-    <v-row class="text-center">
-      <v-col cols="12">
-        <v-img
-          :src="require('../assets/logo.svg')"
-          class="my-3"
-          contain
-          height="200"
-        />
-      </v-col>
-
-      <v-col class="mb-4">
-        <h1 class="display-2 font-weight-bold mb-3">
-          Welcome to Vuetify
-        </h1>
-
-        <p class="subheading font-weight-regular">
-          For help and collaboration with other Vuetify developers,
-          <br>please join our online
-          <a
-            href="https://community.vuetifyjs.com"
-            target="_blank"
-          >Discord Community</a>
-        </p>
-      </v-col>
-
-      <v-col
-        class="mb-5"
-        cols="12"
+   <v-app>
+      <v-form 
+    ref="form"
+    v-model="valid"
+    lazy-validation width="800"
+  >
+    <v-dialog 
+  v-model="pop" 
+    > 
+  <template v-slot:activator="{ on,attr }">
+  <v-flex text-right align-right>
+    <v-btn
+    elevation='5'
+        color="primary"
+        v-bind="attr"
+        v-on="on"
       >
-        <h2 class="headline font-weight-bold mb-3">
-          What's next?
-        </h2>
+        <h3><v-icon>ADD</v-icon></h3>
+      </v-btn>
+    </v-flex>     
+      </template>
+  <v-card text class="dark" >
+    <v-text-field
+      v-model="name"
+      :counter="10"
+      :rules="nameRules"
+      label="Enter your name"
+      required
+    ></v-text-field>
 
-        <v-row justify="center">
-          <a
-            v-for="(next, i) in whatsNext"
-            :key="i"
-            :href="next.href"
-            class="subheading mx-3"
-            target="_blank"
-          >
-            {{ next.text }}
-          </a>
-        </v-row>
-      </v-col>
+    <v-text-field
+      v-model="email"
+      :rules="emailRules"
+      label="E-mail"
+      required
+    ></v-text-field>
 
-      <v-col
-        class="mb-5"
-        cols="12"
-      >
-        <h2 class="headline font-weight-bold mb-3">
-          Important Links
-        </h2>
+    <v-select
+      v-model="select"
+      :items="items"
+      :rules="[v => !!v || 'select one city']"
+      label="Select your city"
+      required
+    ></v-select>
 
-        <v-row justify="center">
-          <a
-            v-for="(link, i) in importantLinks"
-            :key="i"
-            :href="link.href"
-            class="subheading mx-3"
-            target="_blank"
-          >
-            {{ link.text }}
-          </a>
-        </v-row>
-      </v-col>
+    <v-radio-group
+      v-model="gender"
+      label="select gender"
+    row>
+      <v-radio
+        label="Male"
+        value="male"
+      ></v-radio>
+      <v-radio
+        label="Female"
+        value="female"
+      ></v-radio>
+    </v-radio-group>
 
-      <v-col
-        class="mb-5"
-        cols="12"
-      >
-        <h2 class="headline font-weight-bold mb-3">
-          Ecosystem
-        </h2>
 
-        <v-row justify="center">
-          <a
-            v-for="(eco, i) in ecosystem"
-            :key="i"
-            :href="eco.href"
-            class="subheading mx-3"
-            target="_blank"
-          >
-            {{ eco.text }}
-          </a>
-        </v-row>
-      </v-col>
-    </v-row>
-  </v-container>
+    <v-checkbox
+      v-model="checkbox"
+      :rules="[v => !!v || 'You must agree to continue!']"
+      id:checkbox
+      label="Are you interested to join?"
+      required
+    ></v-checkbox>
+
+    <v-btn
+      :disabled="!valid" 
+      v-if="button"
+      color="success"
+      class="mr-4"
+      @click="validate"
+    >
+      Validate
+    </v-btn>
+     <v-btn
+     v-if="!button"
+      :disabled="!valid"
+      color="success"
+      class="mr-4"
+      @click="save"
+    >
+      save
+    </v-btn>
+      </v-card> 
+      </v-dialog> 
+    </v-form>
+   <v-simple-table >
+     <template v-slot:default>
+      <thead>
+        <tr>
+          <th scope="col">index </th>
+          <th scope="col">name </th>
+          <th scope="col">email </th>
+          <th scope="col">gender</th>
+          <th scope="col">select</th>
+          <th scope="col">checkbox</th>
+          <th> </th>
+        </tr>
+      </thead>
+      <tbody>
+         <tr
+          v-for="(item,index) in users" :key = "index">
+          <td>{{ index+1 }}</td>
+          <td>{{ item.name }}</td>
+          <td>{{ item.email }}</td>
+          <td>{{ item.gender }}</td>
+          <td>{{ item.select}}</td>
+          <td>{{ item.checkbox}}</td>
+          <td> <v-icon
+              small
+              color="error"
+          @click="deleteItem(users.item)"
+            >
+              delete
+            </v-icon>
+          <v-icon
+              small
+              color="error"
+          @click="changeItem(item)"
+            >
+              edit
+            </v-icon>
+          </td>
+        </tr>
+      </tbody>
+        </template>
+    </v-simple-table>
+     </v-app>
 </template>
-
 <script>
-  export default {
-    name: 'HelloWorld',
-
-    data: () => ({
-      ecosystem: [
-        {
-          text: 'vuetify-loader',
-          href: 'https://github.com/vuetifyjs/vuetify-loader',
-        },
-        {
-          text: 'github',
-          href: 'https://github.com/vuetifyjs/vuetify',
-        },
-        {
-          text: 'awesome-vuetify',
-          href: 'https://github.com/vuetifyjs/awesome-vuetify',
-        },
+ export default {
+      data: () => ({
+      valid: true,
+      editedIndex: -1,
+      name: '',
+      nameRules: [
+        v => !!v || 'Name is required',
+        v =>/^[a-zA-Z]+$/.test(v) || 'Enter only alphabets',
+        v => (v && v.length <= 10) || 'Name must be less than 10 characters',
       ],
-      importantLinks: [
-        {
-          text: 'Documentation',
-          href: 'https://vuetifyjs.com',
-        },
-        {
-          text: 'Chat',
-          href: 'https://community.vuetifyjs.com',
-        },
-        {
-          text: 'Made with Vuetify',
-          href: 'https://madewithvuejs.com/vuetify',
-        },
-        {
-          text: 'Twitter',
-          href: 'https://twitter.com/vuetifyjs',
-        },
-        {
-          text: 'Articles',
-          href: 'https://medium.com/vuetify',
-        },
+      email: '',
+      emailRules: [
+        v => !!v || 'E-mail is required',
+        v => /.+@.+\..+/.test(v) || 'E-mail must be valid',
       ],
-      whatsNext: [
-        {
-          text: 'Explore components',
-          href: 'https://vuetifyjs.com/components/api-explorer',
-        },
-        {
-          text: 'Select a layout',
-          href: 'https://vuetifyjs.com/getting-started/pre-made-layouts',
-        },
-        {
-          text: 'Frequently Asked Questions',
-          href: 'https://vuetifyjs.com/getting-started/frequently-asked-questions',
-        },
+      select: null,
+      items: [
+        'Chennai',
+        'Coimbatore',
+        'Madurai',
+        'Trichy',
       ],
-    }),
-  }
+      checkbox: false,
+       row: null,
+      users:[],
+      array:'',
+      dialogDelete:false,
+      pop:false,
+      button:true,
+      }),      
+      methods: {
+        validate () {
+        this.$refs.form.validate()
+            this.users.push({
+            index : this.index,
+            name : this.name,
+            email : this.email,
+            gender :this.gender,
+            select: this.select,
+            checkbox: this.checkbox,
+            row: this.row
+          })
+          this.$refs.form.reset()
+         
+          //console.log(JSON.stringify(users))
+        },
+     deleteItem (item) {
+      const index = this.users.indexOf(item)
+      confirm('Are you sure you want to delete this item?') && this.users.splice(index, 1)
+    },
+   changeItem (item) {
+            this.pop = true,
+            this.button=false,
+            this.array = item
+            this.index = item.index,
+            this.name = item.name,
+            this. email = item.email,
+            this. gender =item.gender,
+            this. select= item.select,
+            this.checkbox= item.checkbox,
+            this.row= item.row
+    },
+    save(){
+        let get = this.users.findIndex(temp => temp.id == this.array.id)
+          this.users[get].name = this.name
+          this.users[get].email = this.email
+          this.users[get].gender =this.gender
+          this.users[get].select= this.select
+          this.users[get].checkbox= this.checkbox
+         this.button=true
+    }
+    }
+ }
 </script>

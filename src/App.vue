@@ -38,23 +38,24 @@
     </v-app-bar>-->
 
     <v-main>
-      <UserForm/>
+      <HelloWorld/>
     </v-main>
   </v-app>
 </template>
 
 <script>
-import UserForm from './components/UserForm';
+import HelloWorld from './components/HelloWorld';
+
 
 export default {
   name: 'App',
 
   components: {
-    UserForm,
+    HelloWorld,
   },
 
   data: () => ({
-    //
+  
   }),
 };
 </script>
