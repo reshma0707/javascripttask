@@ -4,7 +4,13 @@ import vuetify from './plugins/vuetify'
 import router from './router'
 
 Vue.config.productionTip = false
-
+Vue.filter('trimming',function(a){
+  if (a.length>10){
+     return `${a.slice(0,10)}..................`
+  }
+  else
+    return a
+})
 new Vue({
   vuetify,
   router,

@@ -23,7 +23,6 @@
   <v-card text class="dark" >
     <v-text-field
       v-model="name"
-      :counter="10"
       :rules="nameRules"
       label="Enter your name"
       required
@@ -77,7 +76,7 @@
       Validate
     </v-btn>
      <v-btn
-     v-if="!button"
+     v-else
       :disabled="!valid"
       color="success"
       class="mr-4"
@@ -103,7 +102,7 @@
       <tbody>
          <tr
           v-for="item in forms" :key="item.id">
-          <td>{{ item.name }}</td>
+          <td>{{ item.name | trimming  }}</td>
           <td>{{ item.email }}</td>
           <td>{{ item.gender }}</td>
           <td>{{ item.city}}</td>
@@ -116,13 +115,16 @@
             >
               delete
             </v-btn>
-          <v-icon
+
+            <v-btn
               small
-              color="error"
-          @click="changeItem(item.id)"
+              class="rm-2"
+              color="red"
+             @click="editItem(item)"
             >
               edit
-            </v-icon>
+            </v-btn>
+  
           </td>
         </tr>
       </tbody>
@@ -135,7 +137,7 @@ import  Vue from 'vue' // in Vue 3
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 Vue.use(VueAxios, axios)
-
+var test
  export default {
       data: () => ({
       valid: true,
@@ -144,7 +146,7 @@ Vue.use(VueAxios, axios)
       nameRules: [
         v => !!v || 'Name is required',
         v =>/^[a-zA-Z]+$/.test(v) || 'Enter only alphabets',
-        v => (v && v.length <= 10) || 'Name must be less than 10 characters',
+        v => (v && v.length <= 20) || 'Name must be less than 10 characters',
       ],
       email: '',
       emailRules: [
@@ -159,7 +161,7 @@ Vue.use(VueAxios, axios)
         'Trichy',
       ],
       checkbox: false,
-       row: null,
+      row: null,
       users:[],
       array:'',
       dialogDelete:false,
@@ -175,11 +177,7 @@ Vue.use(VueAxios, axios)
       })},  
       methods: {
         read(){
-            Vue.axios.get("http://127.0.0.1:3333/readForm").
-            then((res)=>{
-            this.forms=res.data;
-            console.warn(res.data);
-            })
+         this.mounted()
         },
         insert(){
             
@@ -192,65 +190,83 @@ Vue.use(VueAxios, axios)
             })
             
             this.pop=false
-
         },
       
-        delete(id){
-             Vue.axios.post(`http://127.0.0.1:3333/delete/${id}`)
+        deleteItem(id){
+           Vue.axios.delete(`http://127.0.0.1:3333/delete/${id}`)
              .then(response => {
              console.log(response);
           });
         },
-        validate () {
-        this.$refs.form.validate()
-            this.users.push({
-            index : this.index,
-            name : this.name,
-            email : this.email,
-            gender :this.gender,
-            city: this.city,
-            checkbox: this.checkbox,
-          })
-          this.$refs.form.reset()
-         
-          //console.log(JSON.stringify(users))
-        },
-     deleteItem(id) {
-       Vue.axios.delete(`http://127.0.0.1:3333/delete/${id}`)
-             .then(response => {
-             console.log(response);
-          });
+      editItem(item) {
+      this.button=false
+      this.pop = true
+      test = item
+      this.name = item.name
+      this.email = item.email
+      this.gender = item.gender
+      this.city = item.city
+      this.checkbox=item.checkbox
+    
     },
-  async changeItem (item) {
-            const test = item
-            this.pop = true,
-            this.button=false,
-            this.array = item
-            this.index = item.index,
-            this.name = item.name,
-            this. email = item.email,
-            this. gender =item.gender,
-            this. city= item.city,
-            this.checkbox= item.checkbox,
-            await axios.put(`http://127.0.0.1:40193/updatedept/${test.id}`, {
-            name: test.name,
-            email:test.email,
-            gender: test.gender,
-            city: test.city,
-            checkbox:test.checkbox
-
-
+    async save() {
+      this.button=true
+      test.name = this.name
+      test.email = this.email
+      test.gender = this.gender
+      test.city = this.city
+      test.checkbox=this.checkbox
+      await axios.patch(`http://127.0.0.1:3333/update/${test.id}`, {
+           name : this.name,
+           email : this.email,
+           gender : this.gender,
+           city : this.city,
+           checkbox:this.checkbox
       })
+      .then(response => {
+          console.log(response);
+        });
+      this.pop=false
+       this.$refs.form.reset()
     },
-    save(){
-        let get = this.users.findIndex(temp => temp.id == this.array.id)
-          this.users[get].name = this.name
-          this.users[get].email = this.email
-          this.users[get].gender =this.gender
-          this.users[get].city= this.city
-          this.users[get].checkbox= this.checkbox
-         this.button=true
-    }
+      
+
+      //  edit(item){
+           
+      //       this.button = false
+      //       this.pop= true
+      //       test = item 
+      //       this.name = item.name
+      //       this.email = item.email
+      //       this.gender = item.gender
+      //       this.city = item.city
+      //       this.checkbox=item.checkbox
+      //   },
+      //  save(){
+         
+      // this.button=true
+      // this.pop=false
+      // test.name = this.name
+      // test.email = this.email
+      // test.gender = this.gender
+      // test.city = this.city
+      // test.checkbox=this.checkbox
+      // this.$refs.form.reset()
+      // Vue.axios.put(`http://127.0.0.1:3333/update/${id}`,{
+      //      name : this.name,
+      //      email : this.email,
+      //      gender : this.gender,
+      //      city : this.city,
+      //      checkbox:this.checkbox
+      // })
+            
+      //       this.read()
+      //       this.resetform()
+      //       this.$refs.forms.reset()
+
+      //       console.log(test.name)
+      //       this.sendData()
+      //   },
     }
  }
 </script>
