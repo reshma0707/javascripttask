@@ -93,7 +93,7 @@
      <template v-slot:default>
       <thead>
         <tr>
-          <th scope="col">name </th>
+          <th scope="col">name <v-btn  class="mx-2" fab darksmall color="primary">  <v-icon dark>  mdi-minus</v-icon></v-btn></th>
           <th scope="col">email </th>
           <th scope="col">gender</th>
           <th scope="col">city</th>
@@ -174,6 +174,7 @@ var test
       forms:undefined
       }),    
       mounted(){
+        console.log(process.env.VUE_APP_BACKEND_URL);
      Vue.axios.get("http://127.0.0.1:3333/read").
             then((res)=>{
             this.forms=res.data;

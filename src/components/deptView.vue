@@ -2,6 +2,7 @@
   <v-app>
  <div>
  <searchTable :test='connect' @searchEmits="Search($event)"/>
+
  </div>
       <v-form 
     ref="form"
@@ -25,19 +26,19 @@
       </template>
   <v-card text class="dark" >
     <v-text-field
-      v-model="departmentId"
+      v-model="dpt.departmentId"
       label="Enter your dept id"
       required
     ></v-text-field>
 
     <v-text-field
-      v-model="departmentName"
+      v-model="dpt.departmentName"
       label="departmentName"
       required
     ></v-text-field>
     
      <v-text-field
-      v-model="hod"
+      v-model="dpt.hod"
       label="hod"
       required
     ></v-text-field>
@@ -63,13 +64,12 @@
       </v-dialog> 
     </v-form>
    <v-simple-table >
-    
      <template v-slot:default>
       <thead>
         <tr>
-          <th scope="col">departmentId</th>
-          <th scope="col">departmentName </th>
-          <th scope="col">hod</th>
+          <th scope="col">departmentId<v-btn  class="pa-2" @click="SortAsc"  darksmall color="primary">  <v-icon dark>  mdi-minus</v-icon></v-btn><v-btn  class="mx-1"  @click="SortDesc" darksmall color="primary">  <v-icon dark>  mdi-plus</v-icon></v-btn></th>
+          <th scope="col">departmentName<v-btn  class="mr-1" @click="SortAscName"  darksmall color="primary">  <v-icon dark>  mdi-minus</v-icon></v-btn><v-btn  class="mx-1"  @click="SortDescName" darksmall color="primary">  <v-icon dark>  mdi-plus</v-icon></v-btn> </th>
+          <th scope="col">hod<v-btn  class="mr-1" @click="SortAscHod"  darksmall color="primary">  <v-icon dark>  mdi-minus</v-icon></v-btn><v-btn  class="mx-1"  @click="SortDescHod" darksmall color="primary">  <v-icon dark>  mdi-plus</v-icon></v-btn></th>
           <th> </th>
         </tr>
       </thead>
@@ -109,15 +109,16 @@
 import  Vue from 'vue' // in Vue 3
 import axios from 'axios'
 import VueAxios from 'vue-axios'
+import {getData}  from '../components/service/opp.js'
 Vue.use(VueAxios, axios)
 var test
  export default {
       data: () => ({
-      connect:'http://127.0.0.1:3333/searchDept',
+      connect:`${process.env.VUE_APP_EE_URL}/searchDept`,
       valid: true,
-      departmentId:'',
+      dpt:{departmentId:'',
       departmentName:'',
-      hod:'',
+      hod:''},
       users:[],
       array:'',
       dialogDelete:false,
@@ -126,10 +127,10 @@ var test
       departments:'',
       word:undefined
       }),    
-     async mounted(){
-      await Vue.axios.get('http://127.0.0.1:3333/readDept').
-            then((res)=>{
-            this.departments=res.data;
+     mounted(){   
+        getData()
+            .then((res)=>{
+            this.departments=res;
           console.warn(res);
       })},  
     methods:{
@@ -137,16 +138,12 @@ var test
          this.mounted()
         },
       insert(){
-            Vue.axios.post(`http://127.0.0.1:3333/insertDept`,{
-            departmentId : this.departmentId,
-            departmentName : this.departmentName,
-            hod :this.hod
-            })
+            Vue.axios.post(`${process.env.VUE_APP_EE_URL}/insertDept`,this.dpt)
             
             this.pop=false
         },
        deleteItem(department_id){
-           Vue.axios.delete(`http://127.0.0.1:3333/deleteDept/${department_id}`)
+           Vue.axios.delete(`${process.env.VUE_APP_EE_URL}/${department_id}`)
              .then(response => {
              console.log(response);
           });
@@ -155,26 +152,58 @@ var test
       console.log(word.data)
         this.departments=word.data
       },
-   
       
+    async SortAsc(){
+       await  Vue.axios.get(`${process.env.VUE_APP_EE_URL}/SortAce`).
+            then((res)=>{
+            this.departments=res.data;
+          console.log(res)});
+        },
+    async  SortDesc(){
+       await Vue.axios.get(`${process.env.VUE_APP_EE_URL}/SortDesc`).
+            then((res)=>{
+            this.departments=res.data;
+          console.log(res)})
+        },
+      async SortAscName(){
+       await  Vue.axios.get(`${process.env.VUE_APP_EE_URL}/SortAceName`).
+            then((res)=>{
+            this.departments=res.data;
+          console.log(res)});
+        },
+    async  SortDescName(){
+       await Vue.axios.get(`${process.env.VUE_APP_EE_URL}/SortDescName`).
+            then((res)=>{
+            this.departments=res.data;
+          console.log(res)})
+        }, 
+   async SortAscHod(){
+       await  Vue.axios.get(`${process.env.VUE_APP_EE_URL}/SortAceHod`).
+            then((res)=>{
+            this.departments=res.data;
+          console.log(res)});
+        },
+    async  SortDescHod(){
+       await Vue.axios.get(`${process.env.VUE_APP_EE_URL}/SortDescHod`).
+            then((res)=>{
+            this.departments=res.data;
+          console.log(res)})
+        },
       editItem(item) {
       this.button=false
       this.pop = true
       test = item
-      this.departmentId = item.department_id
-      this.departmentName = item.department_name
-      this.hod = item.hod
+      this.dpt.departmentId = item.department_id
+      this.dpt.departmentName = item.department_name
+      this.dpt.hod = item.hod
     },
     async save() {
       this.button=true
-      test.departmentId = this.department_id
-      test.departmentName = this.department_name
-      test.hod = this.hod
+      test.departmentId = this.dpt.department_id
+      test.departmentName = this.dpt.department_name
+      test.hod = this.dpt.hod
      
-      await axios.patch(`http://127.0.0.1:3333/updateDept/${test.department_id}`, {
-           department_name : this.departmentName,
-           hod : this.hod
-      })
+      await axios.patch(`${process.env.VUE_APP_EE_URL}/${test.department_id}`,this.dpt)
       .then(response => {
           console.log(response);
         });
