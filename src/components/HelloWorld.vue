@@ -1,5 +1,7 @@
 <template>
+
    <v-app>
+   <searchTable :test='connect' @searchEmits="Search($event)"/>
       <v-form 
     ref="form"
     v-model="valid"
@@ -136,10 +138,12 @@
 import  Vue from 'vue' // in Vue 3
 import axios from 'axios'
 import VueAxios from 'vue-axios'
+
 Vue.use(VueAxios, axios)
 var test
  export default {
       data: () => ({
+      connect:'http://127.0.0.1:3333/searchForm',
       valid: true,
       editedIndex: -1,
       name: '',
@@ -191,7 +195,10 @@ var test
             
             this.pop=false
         },
-      
+       Search(word){
+      console.log(word.data)
+        this.forms=word.data
+      },
         deleteItem(id){
            Vue.axios.delete(`http://127.0.0.1:3333/delete/${id}`)
              .then(response => {
@@ -229,44 +236,8 @@ var test
       this.pop=false
        this.$refs.form.reset()
     },
-      
-
-      //  edit(item){
-           
-      //       this.button = false
-      //       this.pop= true
-      //       test = item 
-      //       this.name = item.name
-      //       this.email = item.email
-      //       this.gender = item.gender
-      //       this.city = item.city
-      //       this.checkbox=item.checkbox
-      //   },
-      //  save(){
-         
-      // this.button=true
-      // this.pop=false
-      // test.name = this.name
-      // test.email = this.email
-      // test.gender = this.gender
-      // test.city = this.city
-      // test.checkbox=this.checkbox
-      // this.$refs.form.reset()
-      // Vue.axios.put(`http://127.0.0.1:3333/update/${id}`,{
-      //      name : this.name,
-      //      email : this.email,
-      //      gender : this.gender,
-      //      city : this.city,
-      //      checkbox:this.checkbox
-      // })
-            
-      //       this.read()
-      //       this.resetform()
-      //       this.$refs.forms.reset()
-
-      //       console.log(test.name)
-      //       this.sendData()
-      //   },
+  
     }
+    
  }
 </script>
